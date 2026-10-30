@@ -952,6 +952,7 @@ pub struct ProviderConfig {
     pub anthropic: AnthropicConfig,
     pub openrouter: OpenRouterConfig,
     pub custom: CustomProviderConfig,
+    #[serde(default)]
     pub alibaba: AlibabaConfig,
 }
 
@@ -2456,6 +2457,18 @@ mod tests {
             ProviderKind::from_cli_name("custom"),
             Some(ProviderKind::Custom)
         );
+        assert_eq!(
+            ProviderKind::from_cli_name("alibaba"),
+            Some(ProviderKind::Alibaba)
+        );
+        assert_eq!(
+            ProviderKind::from_cli_name("dashscope"),
+            Some(ProviderKind::Alibaba)
+        );
+        assert_eq!(
+            ProviderKind::from_cli_name("qwen"),
+            Some(ProviderKind::Alibaba)
+        );
         assert_eq!(ProviderKind::from_cli_name("nope"), None);
     }
 
@@ -2463,6 +2476,47 @@ mod tests {
     fn onboarding_completed_defaults_to_false() {
         let config = NcaConfig::default();
         assert!(!config.ui.onboarding_completed);
+    }
+
+    #[test]
+    fn provider_config_deserializes_without_alibaba() {
+        let toml_str = r#"
+default = "openai"
+
+[minimax]
+api_key_env = "MINIMAX_API_KEY"
+base_url = "https://api.minimax.io/anthropic"
+model = "MiniMax-M2.7"
+temperature = 0.7
+
+[openai]
+api_key_env = "OPENAI_API_KEY"
+base_url = "https://api.openai.com"
+model = "gpt-4o-mini"
+temperature = 0.7
+
+[anthropic]
+api_key_env = "ANTHROPIC_API_KEY"
+base_url = "https://api.anthropic.com"
+model = "claude-3-7-sonnet-latest"
+temperature = 1.0
+
+[openrouter]
+api_key_env = "OPENROUTER_API_KEY"
+base_url = "https://openrouter.ai/api"
+model = "openai/gpt-4o-mini"
+temperature = 0.7
+
+[custom]
+compatibility = "openai"
+api_key_env = "CUSTOM_PROVIDER_API_KEY"
+base_url = ""
+model = "custom-model"
+temperature = 0.7
+"#;
+        let cfg: ProviderConfig = toml::from_str(toml_str).expect("deserialize legacy config");
+        assert_eq!(cfg.default, ProviderKind::OpenAi);
+        assert_eq!(cfg.alibaba.model, "qwen2.5-coder-32b-instruct");
     }
 
     #[test]
