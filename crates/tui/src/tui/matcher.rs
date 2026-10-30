@@ -42,10 +42,8 @@ impl OptionMatcher {
             return true;
         }
 
-        if let Some(re) = &self.regex
-            && re.is_match(target)
-        {
-            return true;
+        if let Some(re) = &self.regex {
+            return re.is_match(target);
         }
 
         target.to_ascii_lowercase().contains(&self.raw)
@@ -86,6 +84,13 @@ mod tests {
         assert!(matcher.is_match("gpt-4o-mini"));
         assert!(matcher.is_match("GPT-4.5-MINI"));
         assert!(!matcher.is_match("gpt-4o"));
+    }
+
+    #[test]
+    fn regex_does_not_fall_through_to_substring_on_miss() {
+        let matcher = OptionMatcher::new("^main$");
+        assert!(matcher.is_match("main"));
+        assert!(!matcher.is_match("domain"));
     }
 
     #[test]

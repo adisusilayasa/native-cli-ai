@@ -164,12 +164,8 @@ impl NcaConfig {
     }
 
     fn apply_env(&mut self) {
-        let env_val = |key: &str| -> Option<String> {
-            env::var(key)
-                .ok()
-                .map(|v| v.trim().to_string())
-                .filter(|v| !v.is_empty())
-        };
+        let env_val =
+            |key: &str| -> Option<String> { env::var(key).ok().filter(|v| !v.trim().is_empty()) };
 
         if let Some(provider) = env_val("NCA_DEFAULT_PROVIDER") {
             self.provider.default = ProviderKind::from_env(&provider);

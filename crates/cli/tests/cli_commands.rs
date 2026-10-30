@@ -84,6 +84,8 @@ fn nca_cmd(workspace: &Path, home: &Path) -> Command {
         "CUSTOM_PROVIDER_BASE_URL",
         "CUSTOM_PROVIDER_MODEL",
         "DASHSCOPE_API_KEY",
+        "DASHSCOPE_BASE_URL",
+        "DASHSCOPE_MODEL",
         "ALIBABA_API_KEY",
         "ALIBABA_BASE_URL",
         "ALIBABA_MODEL",

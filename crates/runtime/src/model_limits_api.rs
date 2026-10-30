@@ -167,7 +167,8 @@ async fn query_provider_limits(config: &NcaConfig, model: &str) -> Option<usize>
                 return None;
             };
             let base = config.provider.alibaba.base_url.trim_end_matches('/');
-            fetch_openai_context(&client, base, &key, model).await
+            let normalized_base = base.strip_suffix("/v1").unwrap_or(base);
+            fetch_openai_context(&client, normalized_base, &key, model).await
         }
         ProviderKind::Custom => {
             let Some(key) = config.provider.custom.resolve_api_key() else {
@@ -576,7 +577,8 @@ async fn fetch_alibaba_model_ids(client: &reqwest::Client, config: &NcaConfig) -
     };
     let mut shadow = config.clone();
     shadow.provider.openai.api_key = Some(key);
-    shadow.provider.openai.base_url = config.provider.alibaba.base_url.clone();
+    let base = config.provider.alibaba.base_url.trim_end_matches('/');
+    shadow.provider.openai.base_url = base.strip_suffix("/v1").unwrap_or(base).to_string();
     let models = fetch_openai_model_ids(client, &shadow).await;
     if models.is_empty() { fallback } else { models }
 }

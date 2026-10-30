@@ -288,8 +288,8 @@ The default environment variable names are:
 | Anthropic | `ANTHROPIC_API_KEY` |
 | OpenAI | `OPENAI_API_KEY` |
 | OpenRouter | `OPENROUTER_API_KEY` |
+| Alibaba | `DASHSCOPE_API_KEY` (or `ALIBABA_API_KEY`) |
 | Custom | `CUSTOM_PROVIDER_API_KEY` |
-
 You can change the environment variable name via `api_key_env` in config.
 
 ## Extended Thinking
