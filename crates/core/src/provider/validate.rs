@@ -33,8 +33,13 @@ pub async fn validate_api_key(
     };
 
     let result = match provider {
-        ProviderKind::OpenAi | ProviderKind::OpenRouter => {
-            let url = format!("{}/v1/models", base_url.trim_end_matches('/'));
+        ProviderKind::OpenAi | ProviderKind::OpenRouter | ProviderKind::Alibaba => {
+            let base = base_url.trim_end_matches('/');
+            let url = if base.ends_with("/v1") {
+                format!("{base}/models")
+            } else {
+                format!("{base}/v1/models")
+            };
             client
                 .get(&url)
                 .header("Authorization", format!("Bearer {api_key}"))
